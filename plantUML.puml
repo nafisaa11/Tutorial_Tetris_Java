@@ -1,0 +1,47 @@
+@startuml
+class Game {
+    - board: Board
+    - currentPiece: Piece
+    + startGame()
+    + update()
+    + checkCollision()
+}
+
+class Board {
+    - grid: Cell[][]
+    + clearLines()
+    + draw()
+    + isFull()
+}
+
+class Piece {
+    - shape: Shape
+    - position: Position
+    + rotate()
+    + moveLeft()
+    + moveRight()
+    + drop()
+}
+
+class Shape {
+    - type: String
+    + getCoordinates()
+}
+
+class Position {
+    - x: int
+    - y: int
+}
+
+class Cell {
+    - isFilled: boolean
+    - color: String
+}
+
+Game --o Board
+Game --> Piece
+Piece --> Shape
+Piece --> Position
+Board --> Cell
+
+@enduml

@@ -6,25 +6,15 @@ import java.awt.Graphics;
 public class Shape {
 
     private Color color;
-
     private int x, y;
-
     private long time, lastTime;
-
     private int normal = 600, fast = 50;
-
     private int delay;
-
     private int[][] coords;
-
     private int[][] reference;
-
     private int deltaX;
-
     private Board board;
-
     private boolean collision = false, moveX = false;
-
     private int timePassedFromCollision = -1;
 
     public Shape(int[][] coords, Board board, Color color) {
@@ -45,7 +35,7 @@ public class Shape {
 
     long deltaTime;
 
-    public void update() {
+    public void update(int linesCleared) {
         moveX = true;
         deltaTime = System.currentTimeMillis() - lastTime;
         time += deltaTime;
@@ -60,7 +50,7 @@ public class Shape {
                 }
             }
             checkLine();
-            board.addScore();
+            board.addScore(linesCleared);
             board.setCurrentShape();
             timePassedFromCollision = -1;
         }
@@ -129,20 +119,11 @@ public class Shape {
             }
         }
 
-//        for (int row = 0; row < reference.length; row++) {
-//            for (int col = 0; col < reference[0].length; col++) {
-//                if (reference[row][col] != 0) {
-//                    g.fillRect(col * 30 + 320, row * 30 + 160, Board.blockSize, Board.blockSize);
-//                }
-//
-//            }
-//
-//        }
-
     }
 
     private void checkLine() {
         int size = board.getBoard().length - 1;
+        int linesCleared = 0; // Menyimpan jumlah baris penuh
 
         for (int i = board.getBoard().length - 1; i > 0; i--) {
             int count = 0;
@@ -151,11 +132,21 @@ public class Shape {
                     count++;
                 }
 
+                // Salin nilai baris ke posisi baru
                 board.getBoard()[size][j] = board.getBoard()[i][j];
             }
-            if (count < board.getBoard()[0].length) {
-                size--;
+
+            // Jika baris penuh, tambahkan ke jumlah baris penuh
+            if (count == board.getBoard()[0].length) {
+                linesCleared++;
+            } else {
+                size--; // Geser baris ke bawah
             }
+        }
+
+        // Tambahkan skor berdasarkan jumlah baris penuh
+        if (linesCleared > 0) {
+            board.addScore(linesCleared);
         }
     }
 
@@ -164,7 +155,6 @@ public class Shape {
         int[][] rotatedShape = null;
 
         rotatedShape = transposeMatrix(coords);
-
         rotatedShape = reverseRows(rotatedShape);
 
         if ((x + rotatedShape[0].length > 10) || (y + rotatedShape.length > 20)) {
@@ -183,6 +173,7 @@ public class Shape {
         coords = rotatedShape;
     }
 
+    // Untuk rotasi Shape
     private int[][] transposeMatrix(int[][] matrix) {
         int[][] temp = new int[matrix[0].length][matrix.length];
         for (int i = 0; i < matrix.length; i++) {

@@ -3,13 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tetris/Tutorial_Tetris_Java-master/data/refresh.png</file>
-            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tetris/Tutorial_Tetris_Java-master/src/tetris/WindowGame.java</file>
-            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tetris/Tutorial_Tetris_Java-master/src/tetris/Shape.java</file>
-            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tetris/Tutorial_Tetris_Java-master/data/arrow.png</file>
-            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tetris/Tutorial_Tetris_Java-master/src/tetris/PlayerScore.java</file>
-            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tetris/Tutorial_Tetris_Java-master/src/tetris/Board.java</file>
-            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tetris/Tutorial_Tetris_Java-master/src/tetris/ImageLoader.java</file>
+            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tutorial_Tetris_Java/Tutorial_Tetris_Java-master/src/tetris/ImageLoader.java</file>
+            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tutorial_Tetris_Java/Tutorial_Tetris_Java-master/src/tetris/PlayerScore.java</file>
+            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tutorial_Tetris_Java/Tutorial_Tetris_Java-master/src/tetris/WindowGame.java</file>
+            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tutorial_Tetris_Java/Tutorial_Tetris_Java-master/src/tetris/Title.java</file>
+            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tutorial_Tetris_Java/Tutorial_Tetris_Java-master/src/tetris/Shape.java</file>
+            <file>file:/C:/laragon/www/S3/Tugas%20PBO/Tutorial_Tetris_Java/Tutorial_Tetris_Java-master/src/tetris/Board.java</file>
         </group>
     </open-files>
 </project-private>
