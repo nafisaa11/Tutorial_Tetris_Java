@@ -65,6 +65,7 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
     };
 
     private Random random = new Random();
+
     // buttons press lapse
     private Timer buttonLapse = new Timer(300, new ActionListener() {
 
@@ -146,6 +147,11 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
 
         if (gamePaused || gameOver) {
+            if (gameOver && !looper.isRunning()) {
+                // Jika game over, simpan skor dan hentikan permainan
+                saveScoreToDatabase(playerName, score);
+                stopGame(); // Reset permainan
+            }
             return;
         }
 
@@ -240,13 +246,18 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
 
         //Game Over
         if (gameOver) {
-            addScoreToBoard(playerName, score); // Add score to scoreboard
-            displayScoreboard(g);
+            loadTopScoresFromDatabase(); // Load top scores from database before displaying
+            displayScoreboard(g); // Display the scoreboard
+            g.drawString(playerName + " " + " " + " " + score, 50, WindowGame.HEIGHT / 2 + 30);
+            
+//            g.setFont(new Font("Georgia", Font.BOLD, 20));
 
             String gameOverString = "GAME OVER";
             g.setColor(Color.WHITE);
             g.setFont(new Font("Georgia", Font.BOLD, 30));
             g.drawString(gameOverString, 50, WindowGame.HEIGHT / 2);
+
+            // Display player's name and score
         }
 
         g.setColor(Color.WHITE);
@@ -270,7 +281,6 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         nextShape = new Shape(shapes[index].getCoords(), this, colors[colorIndex]);
     }
 
-    // Jika Shape sudah berada paling atas
     // Jika Shape sudah berada paling atas
     public void setCurrentShape() {
         currentShape = nextShape;
@@ -304,15 +314,68 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         }
     }
 
+//    private void displayScoreboard(Graphics g) {
+//        g.setColor(Color.WHITE);
+//        g.setFont(new Font("Georgia", Font.BOLD, 20));
+//        g.drawString("LEADERBOARD", 50, 50);
+//
+//        // Display top 5 scores
+//        int displayCount = Math.min(5, scoreboard.size());
+//        for (int i = 0; i < displayCount; i++) {
+//            PlayerScore ps = scoreboard.get(i);
+//            g.drawString((i + 1) + ". " + ps.getPlayerName() + " " + ps.getScore(), 50, 80 + (i * 30));
+//        }
+//
+//        // Check if the player's score qualifies for the leaderboard
+//        int playerRank = -1;
+//        for (int i = 0; i < scoreboard.size(); i++) {
+//            if (scoreboard.get(i).getPlayerName().equals(playerName)) {
+//                playerRank = i + 1; // Rank is index + 1
+//                break;
+//            }
+//        }
+//
+//        // If the player's score is in the top 5, display it twice
+//        if (playerRank != -1 && playerRank <= 5) {
+//            g.drawString(playerRank + ". " + playerName + " " + score, 50, 100 + (displayCount * 30));
+//        } else if (playerRank > 5) {
+//            // If the player's score is not in the top 5, display it once
+//            g.drawString(playerRank + ". " + playerName + " " + score, 50, 100);
+//        }
+//    }
+    
     private void displayScoreboard(Graphics g) {
+        // Sort the scoreboard in descending order by score
+        scoreboard.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
+
+        // Set leaderboard title
         g.setColor(Color.WHITE);
         g.setFont(new Font("Georgia", Font.BOLD, 20));
         g.drawString("LEADERBOARD", 50, 50);
 
-        for (int i = 0; i < scoreboard.size(); i++) {
+        // Display top 5 scores
+        int displayCount = Math.min(5, scoreboard.size());
+        for (int i = 0; i < displayCount; i++) {
             PlayerScore ps = scoreboard.get(i);
-            g.drawString((i + 1) + ". " + ps.getPlayerName() + " " + " " + " " + ps.getScore(), 50, 80 + (i * 30));
+            g.drawString((i + 1) + ". " + ps.getPlayerName() + " " + ps.getScore(), 50, 80 + (i * 30));
         }
+
+        // Check if the player's score qualifies for the leaderboard
+        int playerRank = -1;
+        for (int i = 0; i < scoreboard.size(); i++) {
+            if (scoreboard.get(i).getPlayerName().equals(playerName)) {
+                playerRank = i + 1; // Rank is index + 1
+                break;
+            }
+        }
+//
+//        // If the player's score is in the top 5, display it twice
+//        if (playerRank != -1 && playerRank <= 5) {
+//            g.drawString(playerRank + ". " + playerName + " " + score, 50, 100 + (displayCount * 30));
+//        } else if (playerRank > 5) {
+//            // If the player's score is not in the top 5, display it once
+//            g.drawString(playerRank + ". " + playerName + " " + score, 50, 100 + (displayCount * 30));
+//        }
     }
 
     @Override
@@ -351,18 +414,22 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         loadTopScoresFromDatabase();
 
         playerName = JOptionPane.showInputDialog("Enter your name:");
+        if (playerName == null || playerName.trim().isEmpty()) {
+            playerName = "Unknown"; // Default jika tidak diisi
+        }
+
         setNextShape();
         setCurrentShape();
         gameOver = false;
         score = 0; // Reset score for new game
         looper.start();
+
     }
 
     // Menghentikan permainan
     public void stopGame() {
         if (gameOver) {
-            // Tambahkan skor ke papan skor dan simpan ke database
-            addScoreToBoard(playerName, score);
+            // Save score to the database immediately when the game is over
             saveScoreToDatabase(playerName, score);
         }
 
@@ -375,15 +442,6 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
         looper.stop();
     }
 
-//    class GameLooper implements ActionListener {
-//
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//            update();
-//            repaint();
-//        }
-//
-//    }
     class GameLooper implements ActionListener {
 
         @Override
@@ -461,16 +519,18 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
             JOptionPane.showMessageDialog(this, "Failed to save score to database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
 
+        System.out.println("Saving score for player: " + playerName + " with score: " + score);
+
     }
 
     private void loadTopScoresFromDatabase() {
-        String url = "jdbc:mysql://localhost:3306/tetris"; // Sesuaikan nama database
-        String username = "root"; // Nama pengguna MySQL
-        String password = "";     // Kata sandi MySQL
+        String url = "jdbc:mysql://localhost:3306/tetris"; // Adjust database name
+        String username = "root"; // MySQL username
+        String password = "";     // MySQL password
 
-        String query = "SELECT player_name, score FROM score_board ORDER BY score DESC LIMIT 5"; // Ambil 5 skor tertinggi
+        String query = "SELECT player_name, score FROM score_board ORDER BY score DESC LIMIT 5"; // Get top 5 scores
 
-        scoreboard.clear(); // Bersihkan scoreboard sebelum memuat data baru
+        scoreboard.clear(); // Clear previous scores
 
         try (Connection conn = DriverManager.getConnection(url, username, password); PreparedStatement pstmt = conn.prepareStatement(query)) {
 
@@ -480,10 +540,11 @@ public class Board extends JPanel implements KeyListener, MouseListener, MouseMo
                 String playerName = resultSet.getString("player_name");
                 int score = resultSet.getInt("score");
 
-                scoreboard.add(new PlayerScore(playerName, score)); // Tambahkan skor ke daftar
+                scoreboard.add(new PlayerScore(playerName, score)); // Add score to list
             }
-
-            System.out.println("Top scores loaded from database successfully!");
+            
+            addScoreToBoard(playerName, score);
+            Collections.sort(scoreboard, Collections.reverseOrder());
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Failed to load top scores from database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);

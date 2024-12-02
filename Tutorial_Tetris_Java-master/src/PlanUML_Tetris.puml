@@ -1,0 +1,118 @@
+@startuml
+
+class WindowGame {
+    - board: Board
+    - title: Title
+    - window: JFrame
+    + WindowGame()
+    + startTetris()
+    + main(String[]): void
+}
+
+class Board {
+    - boardHeight: int
+    - boardWidth: int
+    - blockSize: int
+    - board: Color[][]
+    - shapes: Shape[]
+    - currentShape: Shape
+    - nextShape: Shape
+    - looper: Timer
+    - FPS: int
+    - delay: int
+    - mouseX: int
+    - mouseY: int
+    - leftClick: boolean
+    - stopBounds: Rectangle
+    - refreshBounds: Rectangle
+    - gamePaused: boolean
+    - gameOver: boolean
+    - colors: Color[]
+    - random: Random
+    - buttonLapse: Timer
+    - score: int
+    - playerName: String
+    - scoreboard: List<PlayerScore>
+    + Board()
+    + update()
+    + paintComponent(Graphics g): void
+    + setNextShape(): void
+    + setCurrentShape(): void
+    + getBoard(): Color[][]
+    + addScoreToBoard(String, int): void
+    + displayScoreboard(Graphics g): void
+    + startGame(): void
+    + stopGame(): void
+    + keyPressed(KeyEvent e): void
+    + keyReleased(KeyEvent e): void
+    + mouseDragged(MouseEvent e): void
+    + mouseMoved(MouseEvent e): void
+    + mousePressed(MouseEvent e): void
+    + mouseReleased(MouseEvent e): void
+    + addScore(int): void
+    + getScore(): int
+    + saveScoreToDatabase(String, int): void
+    + loadTopScoresFromDatabase(): void
+}
+
+class Shape {
+    - color: Color
+    - x: int
+    - y: int
+    - time: long
+    - lastTime: long
+    - normal: int
+    - fast: int
+    - delay: int
+    - coords: int[][]
+    - reference: int[][]
+    - deltaX: int
+    - board: Board
+    - collision: boolean
+    - moveX: boolean
+    - timePassedFromCollision: int
+    + Shape(int[][], Board, Color)
+    + update(int): void
+    + render(Graphics g): void
+    + rotateShape(): void
+    + setDeltaX(int): void
+    + speedUp(): void
+    + speedDown(): void
+    + getCoords(): int[][]
+    + getX(): int
+    + getY(): int
+}
+
+class PlayerScore {
+    - playerName: String
+    - score: int
+    + PlayerScore(String, int)
+    + getPlayerName(): String
+    + getScore(): int
+    + compareTo(PlayerScore): int
+}
+
+class Title {
+    - instructions: BufferedImage
+    - window: WindowGame
+    - playButton: BufferedImage[]
+    - timer: Timer
+    + Title(WindowGame)
+    + paintComponent(Graphics g): void
+    + keyTyped(KeyEvent e): void
+    + keyPressed(KeyEvent e): void
+    + keyReleased(KeyEvent e): void
+}
+
+class ImageLoader {
+    + loadImage(String): BufferedImage
+}
+
+WindowGame o--> Board
+WindowGame o--> Title
+Board o--> Shape
+Board o--> PlayerScore
+Board -> ImageLoader
+Title -> ImageLoader
+
+@enduml
